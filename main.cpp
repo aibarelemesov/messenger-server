@@ -30,22 +30,23 @@ int main() {
         return 1;
     }
 
-    listen(server_fd, 3);
-    std::cout << "Listening on port 8080..." << std::endl;
+    while (true) {
+        listen(server_fd, 3);
+        std::cout << "Listening on port 8080..." << std::endl;
 
-    client_fd = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-    if (client_fd < 0) {
-        perror("accept");
-        return 1;
+        client_fd = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen);
+        if (client_fd < 0) {
+            perror("accept");
+            return 1;
+        }
+
+        read(client_fd, buffer, 1024);
+        std::cout << "Received: " << buffer << std::endl;
+
+        std::string response = "Hello from server\n";
+        send(client_fd, response.c_str(), response.length(), 0);
+        close(client_fd);
     }
-
-    read(client_fd, buffer, 1024);
-    std::cout << "Received: " << buffer << std::endl;
-
-    std::string response = "Hello from server\n";
-    send(client_fd, response.c_str(), response.length(), 0);
-
-    close(client_fd);
     close(server_fd);
     return 0;
 }
